@@ -293,3 +293,96 @@ st.text_area(
     label_visibility="collapsed",
     key="graph3_note"
 )
+
+# ==================================================
+# 그래프 4. 개봉일 스크린수와 총 관객의 관계
+# ==================================================
+
+st.divider()
+
+st.subheader("그래프 4. 개봉일 스크린수와 총 관객의 관계")
+
+st.caption(
+    "개봉일 스크린수와 총 관객 사이의 관계를 "
+    "장르별 색으로 구분한 산점도입니다."
+)
+
+
+# 산점도용 데이터
+scatter_df = df[
+    ["movieNm", "genre", "first_scrn", "total_audi"]
+].copy()
+
+
+# 숫자로 변환
+scatter_df["first_scrn"] = pd.to_numeric(
+    scatter_df["first_scrn"],
+    errors="coerce"
+)
+
+scatter_df["total_audi"] = pd.to_numeric(
+    scatter_df["total_audi"],
+    errors="coerce"
+)
+
+
+# 결측값 제거
+scatter_df = scatter_df.dropna(
+    subset=["movieNm", "genre", "first_scrn", "total_audi"]
+)
+
+
+# 산점도 그리기
+fig4 = px.scatter(
+    scatter_df,
+    x="first_scrn",
+    y="total_audi",
+    color="genre",
+    hover_name="movieNm",
+    title="개봉일 스크린수와 총 관객의 관계",
+    labels={
+        "first_scrn": "개봉일 스크린수",
+        "total_audi": "총 관객 수",
+        "genre": "장르"
+    }
+)
+
+
+# 마우스를 올렸을 때 영화명 표시
+fig4.update_traces(
+    hovertemplate=(
+        "영화명: %{hovertext}<br>"
+        "개봉일 스크린수: %{x:,.0f}개<br>"
+        "총 관객: %{y:,.0f}명"
+        "<extra></extra>"
+    ),
+    marker=dict(
+        size=10,
+        opacity=0.75
+    )
+)
+
+
+fig4.update_layout(
+    xaxis_title="개봉일 스크린수",
+    yaxis_title="총 관객 수",
+    margin=dict(t=50, l=10, r=10, b=10)
+)
+
+
+st.plotly_chart(
+    fig4,
+    use_container_width=True
+)
+
+
+# 그래프 설명 작성 자리
+st.markdown("**이 그래프로 알 수 있는 것**")
+
+st.text_area(
+    "이 그래프로 알 수 있는 것",
+    value="",
+    placeholder="이 그래프에서 알 수 있는 내용을 한 문장으로 적어 보세요.",
+    label_visibility="collapsed",
+    key="graph4_note"
+)
