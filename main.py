@@ -108,3 +108,77 @@ st.text_area(
     label_visibility="collapsed",
     key="graph1_note"
 )
+
+# ==================================================
+# 그래프 2. 장르별 영화 트리맵
+# ==================================================
+
+st.divider()
+
+st.subheader("그래프 2. 장르 안에 들어 있는 영화")
+
+st.caption(
+    "장르 안에 영화가 들어 있는 트리맵입니다. "
+    "칸의 크기는 총 관객 수를 나타냅니다."
+)
+
+
+# 트리맵용 데이터
+treemap_df = df[["genre", "movieNm", "total_audi"]].copy()
+
+# 총 관객 수를 숫자로 변환
+treemap_df["total_audi"] = pd.to_numeric(
+    treemap_df["total_audi"],
+    errors="coerce"
+).fillna(0)
+
+
+# 영화명이 비어 있는 경우 처리
+treemap_df["movieNm"] = (
+    treemap_df["movieNm"]
+    .fillna("영화명 미상")
+    .astype(str)
+)
+
+
+# 트리맵 그리기
+fig2 = px.treemap(
+    treemap_df,
+    path=["genre", "movieNm"],
+    values="total_audi",
+    title="장르별 영화 총 관객 트리맵",
+    color="genre"
+)
+
+
+# 마우스를 올렸을 때 표시할 내용
+fig2.update_traces(
+    hovertemplate=(
+        "영화명: %{label}<br>"
+        "총 관객: %{value:,.0f}명"
+        "<extra></extra>"
+    )
+)
+
+
+fig2.update_layout(
+    margin=dict(t=50, l=10, r=10, b=10)
+)
+
+
+st.plotly_chart(
+    fig2,
+    use_container_width=True
+)
+
+
+# 그래프 설명 작성 자리
+st.markdown("**이 그래프로 알 수 있는 것**")
+
+st.text_area(
+    "이 그래프로 알 수 있는 것",
+    value="",
+    placeholder="이 그래프에서 알 수 있는 내용을 한 문장으로 적어 보세요.",
+    label_visibility="collapsed",
+    key="graph2_note"
+)
