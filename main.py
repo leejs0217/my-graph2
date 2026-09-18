@@ -564,3 +564,82 @@ st.text_area(
     label_visibility="collapsed",
     key="graph6_note"
 )
+# ==================================================
+# 그래프 8. 매출액이 높은 영화는 개봉 첫 주 관객 수도 많은가
+# ==================================================
+
+st.divider()
+
+st.subheader("그래프 8. 매출액이 높은 영화는 개봉 첫 주 관객 수도 많은가")
+
+st.caption(
+    "첫 주 관객 수(X축)와 총 매출액(Y축)의 밀도 분포를 보여 주는 2차원 히스토그램입니다. "
+    "색상이 짙을수록 해당 구간에 많은 영화가 밀집해 있음을 나타냅니다."
+)
+
+# 데이터 준비
+heatmap_df = df[
+    ["movieNm", "genre", "first_week_audi", "sales_amt"]
+].copy()
+
+# 숫자형 변환
+heatmap_df["first_week_audi"] = pd.to_numeric(
+    heatmap_df["first_week_audi"],
+    errors="coerce"
+)
+heatmap_df["sales_amt"] = pd.to_numeric(
+    heatmap_df["sales_amt"],
+    errors="coerce"
+)
+
+# 결측값 제거 및 데이터 정제
+heatmap_df = heatmap_df.dropna(
+    subset=["movieNm", "first_week_audi", "sales_amt"]
+)
+
+# 2D 밀도 히스토그램 그리기
+fig9 = px.density_heatmap(
+    heatmap_df,
+    x="first_week_audi",
+    y="sales_amt",
+    hover_data={"movieNm": True, "genre": True},
+    title="매출액이 높은 영화는 개봉 첫 주 관객 수도 많은가",
+    labels={
+        "first_week_audi": "첫 주 관객 수",
+        "sales_amt": "총 매출액(원)",
+        "count": "영화 수"
+    },
+    color_continuous_scale="Viridis"
+)
+
+# 마우스 호버 툴팁 설정
+fig9.update_traces(
+    hovertemplate=(
+        "첫 주 관객 구간: %{x:,.0f}명<br>"
+        "총 매출액 구간: %{y:,.0f}원<br>"
+        "해당 구간 영화 수: %{z}편"
+        "<extra></extra>"
+    )
+)
+
+fig9.update_layout(
+    xaxis_title="첫 주 관객 수",
+    yaxis_title="총 매출액(원)",
+    margin=dict(t=50, l=10, r=10, b=10)
+)
+
+st.plotly_chart(
+    fig9,
+    use_container_width=True
+)
+
+# 그래프 설명 작성 자리
+st.markdown("**이 그래프로 알 수 있는 것**")
+
+st.text_area(
+    "이 그래프로 알 수 있는 것",
+    value="",
+    placeholder="이 그래프에서 알 수 있는 내용을 한 문장으로 적어 보세요.",
+    label_visibility="collapsed",
+    key="graph8_note"
+)
