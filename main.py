@@ -413,4 +413,83 @@ st.plotly_chart(
     fig5,
     use_container_width=True
 )
+# ==================================================
+# 그래프 5. 개봉일 스크린수, 첫 주 관객, 총 관객의 관계 (버블 차트)
+# ==================================================
 
+st.divider()
+
+st.subheader("그래프 5. 개봉일 스크린수, 첫 주 관객, 총 관객의 관계")
+
+st.caption(
+    "개봉일 스크린수(X축)와 총 관객 수(Y축)에 더해, "
+    "원의 크기로 '첫 주 관객 수'를 함께 보여 주는 버블 차트입니다."
+)
+
+# 버블 차트용 데이터 준비
+bubble_df = df[
+    ["movieNm", "genre", "first_scrn", "first_week_audi", "total_audi"]
+].copy()
+
+# 숫자형으로 변환 및 결측치 제거
+for col in ["first_scrn", "first_week_audi", "total_audi"]:
+    bubble_df[col] = pd.to_numeric(bubble_df[col], errors="coerce")
+
+bubble_df = bubble_df.dropna(
+    subset=["movieNm", "genre", "first_scrn", "first_week_audi", "total_audi"]
+)
+
+# 첫 주 관객 수가 0 이하인 경우 크기 표현 오류를 방지하기 위해 0보다 큰 데이터만 사용
+bubble_df = bubble_df[bubble_df["first_week_audi"] > 0]
+
+# 버블 차트 그리기
+fig6 = px.scatter(
+    bubble_df,
+    x="first_scrn",
+    y="total_audi",
+    size="first_week_audi",
+    color="genre",
+    hover_name="movieNm",
+    size_max=40,  # 버블의 최대 크기 설정
+    title="개봉일 스크린수, 첫 주 관객, 총 관객의 관계",
+    labels={
+        "first_scrn": "개봉일 스크린수",
+        "total_audi": "총 관객 수",
+        "first_week_audi": "첫 주 관객 수",
+        "genre": "장르"
+    }
+)
+
+# 마우스를 올렸을 때 표시할 툴팁 설정
+fig6.update_traces(
+    hovertemplate=(
+        "영화명: %{hovertext}<br>"
+        "개봉일 스크린수: %{x:,.0f}개<br>"
+        "총 관객: %{y:,.0f}명<br>"
+        "첫 주 관객: %{marker.size:,.0f}명"
+        "<extra></extra>"
+    ),
+    marker=dict(opacity=0.7)
+)
+
+fig6.update_layout(
+    xaxis_title="개봉일 스크린수",
+    yaxis_title="총 관객 수",
+    margin=dict(t=50, l=10, r=10, b=10)
+)
+
+st.plotly_chart(
+    fig6,
+    use_container_width=True
+)
+
+# 그래프 설명 작성 자리
+st.markdown("**이 그래프로 알 수 있는 것**")
+
+st.text_area(
+    "이 그래프로 알 수 있는 것",
+    value="",
+    placeholder="이 그래프에서 알 수 있는 내용을 한 문장으로 적어 보세요.",
+    label_visibility="collapsed",
+    key="graph5_note"
+)
