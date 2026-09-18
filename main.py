@@ -386,3 +386,78 @@ st.text_area(
     label_visibility="collapsed",
     key="graph4_note"
 )
+# ==================================================
+# 그래프 5
+# 장르별 총 관객 분포 - 박스플롯
+# ==================================================
+st.subheader("그래프 5. 장르별 총 관객 분포")
+
+# 장르별 영화 수 계산
+genre_movie_counts = (
+    df["genre_first"]
+    .value_counts()
+)
+
+# 영화가 10편 이상인 장르만 선택
+selected_genres = genre_movie_counts[
+    genre_movie_counts >= 10
+].index
+
+box_df = df[
+    df["genre_first"].isin(selected_genres)
+][
+    ["movieNm", "genre_first", "total_audi"]
+].copy()
+
+# 총 관객을 숫자로 변환하고 결측값 제거
+box_df["total_audi"] = pd.to_numeric(
+    box_df["total_audi"],
+    errors="coerce"
+)
+
+box_df = box_df.dropna(
+    subset=["movieNm", "genre_first", "total_audi"]
+)
+
+# 박스플롯 생성
+fig5 = px.box(
+    box_df,
+    x="genre_first",
+    y="total_audi",
+    points="outliers",
+    hover_name="movieNm",
+    labels={
+        "genre_first": "장르",
+        "total_audi": "총 관객",
+    },
+    title="영화가 10편 이상인 장르의 총 관객 분포",
+)
+
+# 이상치에 마우스를 올렸을 때 영화명 표시
+fig5.update_traces(
+    hovertemplate=(
+        "<b>%{hovertext}</b><br>"
+        "총 관객: %{y:,.0f}명"
+        "<extra></extra>"
+    ),
+    marker=dict(
+        size=7,
+        opacity=0.8,
+    ),
+)
+
+fig5.update_layout(
+    xaxis_title="장르",
+    yaxis_title="총 관객",
+    margin=dict(t=60, b=20, l=20, r=20),
+)
+
+st.plotly_chart(fig5, use_container_width=True)
+
+st.markdown(
+    "**이 그래프로 알 수 있는 것:** "
+    "영화가 10편 이상인 장르만 대상으로 장르별 총 관객의 중앙값과 "
+    "분포 범위를 비교하고, 특히 평균적인 범위를 크게 벗어난 영화도 확인할 수 있습니다."
+)
+
+st.divider()
