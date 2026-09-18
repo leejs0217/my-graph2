@@ -386,20 +386,18 @@ st.text_area(
     label_visibility="collapsed",
     key="graph4_note"
 )
-
-
 # 1. 영화 수 10편 이상인 장르 추출 및 데이터 필터링
 genre_counts = df['genre'].value_counts()
 valid_genres = genre_counts[genre_counts >= 10].index
 filtered_df = df[df['genre'].isin(valid_genres)]
 
-# 2. 박스플롯 생성 (hover_name에 영화명 컬럼 지정)
+# 2. 박스플롯 생성 (hover_name을 'movieNm'으로 수정)
 fig5 = px.box(
     filtered_df,
     x='genre',
     y='total_audi',
-    hover_name='movie_name',  # 데이터의 영화명 컬럼명으로 변경 (예: 'title', 'movie_nm')
-    points='outliers',        # 상자 밖의 이상치 점만 표시
+    hover_name='movieNm',  # 올바른 컬럼명으로 수정
+    points='outliers',
     title='<b>장르별 총 관객 수 분포 (10편 이상 장르)</b>'
 )
 
@@ -410,4 +408,9 @@ fig5.update_layout(
     template='plotly_white'
 )
 
-fig5.show()
+# 4. Streamlit 전용 출력 함수 사용
+st.plotly_chart(
+    fig5,
+    use_container_width=True
+)
+
