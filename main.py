@@ -386,8 +386,7 @@ st.text_area(
     label_visibility="collapsed",
     key="graph4_note"
 )
-import pandas as pd
-import plotly.express as px
+
 
 # 1. 영화 수 10편 이상인 장르 추출 및 데이터 필터링
 genre_counts = df['genre'].value_counts()
