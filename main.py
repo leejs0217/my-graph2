@@ -493,3 +493,74 @@ st.text_area(
     label_visibility="collapsed",
     key="graph5_note"
 )
+# ==================================================
+# 그래프 6. 제작 국가 및 장르별 영화 편수 (선버스트 차트)
+# ==================================================
+
+st.divider()
+
+st.subheader("그래프 6. 제작 국가 및 장르별 영화 편수")
+
+st.caption(
+    "안쪽 고리는 제작 국가(nation), 바깥쪽 고리는 장르(genre)를 나타내며, "
+    "조각의 크기는 해당 조건에 속한 영화 편수를 의미합니다."
+)
+
+# 데이터 준비 및 전처리
+sunburst_df = df[["nation", "genre"]].copy()
+
+# 결측값 처리
+sunburst_df["nation"] = (
+    sunburst_df["nation"]
+    .fillna("국가 미상")
+    .astype(str)
+    .str.strip()
+    .replace("", "국가 미상")
+)
+
+# 제작 국가와 장르별로 영화 편수(count) 집계
+sunburst_counts = (
+    sunburst_df
+    .groupby(["nation", "genre"])
+    .size()
+    .reset_index(name="count")
+)
+
+# 선버스트 차트 생성
+fig7 = px.sunburst(
+    sunburst_counts,
+    path=["nation", "genre"],
+    values="count",
+    title="제작 국가 및 장르별 영화 편수",
+    color="nation"
+)
+
+# 마우스 호버 툴팁 설정
+fig7.update_traces(
+    hovertemplate=(
+        "구분: %{label}<br>"
+        "영화 편수: %{value}편<br>"
+        "비율: %{percentParent:.1%}"
+        "<extra></extra>"
+    )
+)
+
+fig7.update_layout(
+    margin=dict(t=50, l=10, r=10, b=10)
+)
+
+st.plotly_chart(
+    fig7,
+    use_container_width=True
+)
+
+# 그래프 설명 작성 자리
+st.markdown("**이 그래프로 알 수 있는 것**")
+
+st.text_area(
+    "이 그래프로 알 수 있는 것",
+    value="",
+    placeholder="이 그래프에서 알 수 있는 내용을 한 문장으로 적어 보세요.",
+    label_visibility="collapsed",
+    key="graph6_note"
+)
