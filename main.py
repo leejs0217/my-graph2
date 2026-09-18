@@ -565,23 +565,21 @@ st.text_area(
     key="graph6_note"
 )
 # ==================================================
-# ==================================================
-# ==================================================
-# 그래프 8. 매출액이 높은 영화는 개봉 첫 주 관객 수도 많은가
+# 그래프 8. 총 관객 수가 높은 영화는 개봉 첫 주 관객 수도 많은가
 # ==================================================
 
 st.divider()
 
-st.subheader("그래프 8. 매출액이 높은 영화는 개봉 첫 주 관객 수도 많은가")
+st.subheader("그래프 8. 총 관객 수가 높은 영화는 개봉 첫 주 관객 수도 많은가")
 
 st.caption(
-    "첫 주 관객 수(X축)와 총 매출액(Y축)의 관계를 보여 주는 산점도입니다. "
-    "정에 마우스를 올리면 개별 영화명과 매출액 정보를 확인할 수 있습니다."
+    "첫 주 관객 수(X축)와 총 관객 수(Y축)의 관계를 보여 주는 산점도입니다. "
+    "점에 마우스를 올리면 개별 영화명과 관객 수 정보를 확인할 수 있습니다."
 )
 
-# 데이터 준비 ('total_sales' 컬럼 사용)
+# 데이터 준비 (확실히 존재하는 total_audi 사용)
 heatmap_df = df[
-    ["movieNm", "genre", "first_week_audi", "total_sales"]
+    ["movieNm", "genre", "first_week_audi", "total_audi"]
 ].copy()
 
 # 숫자형 변환
@@ -589,27 +587,27 @@ heatmap_df["first_week_audi"] = pd.to_numeric(
     heatmap_df["first_week_audi"],
     errors="coerce"
 )
-heatmap_df["total_sales"] = pd.to_numeric(
-    heatmap_df["total_sales"],
+heatmap_df["total_audi"] = pd.to_numeric(
+    heatmap_df["total_audi"],
     errors="coerce"
 )
 
 # 결측값 제거
 heatmap_df = heatmap_df.dropna(
-    subset=["movieNm", "first_week_audi", "total_sales"]
+    subset=["movieNm", "first_week_audi", "total_audi"]
 )
 
 # 산점도 그래프 생성
 fig9 = px.scatter(
     heatmap_df,
     x="first_week_audi",
-    y="total_sales",
+    y="total_audi",
     color="genre",
     hover_name="movieNm",
-    title="매출액이 높은 영화는 개봉 첫 주 관객 수도 많은가",
+    title="총 관객 수가 높은 영화는 개봉 첫 주 관객 수도 많은가",
     labels={
         "first_week_audi": "첫 주 관객 수",
-        "total_sales": "총 매출액(원)",
+        "total_audi": "총 관객 수",
         "genre": "장르"
     }
 )
@@ -619,7 +617,7 @@ fig9.update_traces(
     hovertemplate=(
         "영화명: %{hovertext}<br>"
         "첫 주 관객: %{x:,.0f}명<br>"
-        "총 매출액: %{y:,.0f}원"
+        "총 관객 수: %{y:,.0f}명"
         "<extra></extra>"
     ),
     marker=dict(
@@ -630,7 +628,7 @@ fig9.update_traces(
 
 fig9.update_layout(
     xaxis_title="첫 주 관객 수",
-    yaxis_title="총 매출액(원)",
+    yaxis_title="총 관객 수",
     margin=dict(t=50, l=10, r=10, b=10)
 )
 
