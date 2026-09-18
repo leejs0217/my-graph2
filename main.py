@@ -386,3 +386,29 @@ st.text_area(
     label_visibility="collapsed",
     key="graph4_note"
 )
+import pandas as pd
+import plotly.express as px
+
+# 1. 영화 수 10편 이상인 장르 추출 및 데이터 필터링
+genre_counts = df['genre'].value_counts()
+valid_genres = genre_counts[genre_counts >= 10].index
+filtered_df = df[df['genre'].isin(valid_genres)]
+
+# 2. 박스플롯 생성 (hover_name에 영화명 컬럼 지정)
+fig5 = px.box(
+    filtered_df,
+    x='genre',
+    y='total_audi',
+    hover_name='movie_name',  # 데이터의 영화명 컬럼명으로 변경 (예: 'title', 'movie_nm')
+    points='outliers',        # 상자 밖의 이상치 점만 표시
+    title='<b>장르별 총 관객 수 분포 (10편 이상 장르)</b>'
+)
+
+# 3. 레이아웃 세부 설정
+fig5.update_layout(
+    xaxis_title='장르',
+    yaxis_title='총 관객 수',
+    template='plotly_white'
+)
+
+fig5.show()
